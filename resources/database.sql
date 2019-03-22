@@ -12,3 +12,5 @@ CREATE TABLE todos (
   description VARCHAR(255) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+alter table todos add is_completed BOOLEAN default FALSE;
