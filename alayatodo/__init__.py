@@ -1,5 +1,9 @@
 from flask import Flask, g
 import sqlite3
+import os
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, MigrateCommand
+from flask_login import LoginManager
 
 # configuration
 DATABASE = '/tmp/alayatodo.db'
@@ -30,5 +34,17 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join('', app.config['DATABASE'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+db = SQLAlchemy(app)
+Migrate(app, db)
+
+login_manager = LoginManager()
+
+# We can now pass in our app to the login manager
+login_manager.init_app(app)
 
 import alayatodo.views
