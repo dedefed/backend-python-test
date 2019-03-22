@@ -17,3 +17,6 @@ class Todo(db.Model):
 
     def __repr__(self):
         return "Description: {description}".format(description=self.description)
+
+    def to_dict(self):
+        return {'id': self.id, 'description': self.description}

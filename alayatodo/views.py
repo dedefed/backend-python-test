@@ -10,7 +10,7 @@ from flask import (
     render_template,
     request,
     session,
-    flash)
+    flash, jsonify)
 
 
 @app.route('/')
@@ -49,6 +49,13 @@ def logout():
 def todo(id):
     todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
     return render_template('todo.html', todo=todo)
+
+
+@app.route('/todo/<id>/json', methods=['GET'])
+@login_required
+def todo_to_json(id):
+    todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
+    return jsonify(todo.to_dict())
 
 
 @app.route('/todo', methods=['GET'])

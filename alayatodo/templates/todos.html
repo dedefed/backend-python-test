@@ -16,6 +16,7 @@
                 </td>
                 <td>{% if todo.is_completed %} Yes {% else %} No {% endif %}</td>
                 <td>
+                <a href="{{ url_for('todo_to_json', id=todo.id) }}">Json View</a>
                     {% if todo.is_completed %}
                 <form method="post" action="{{ url_for('todo_completed', id=todo.id, status='undone') }}">
                     <button type="submit" class="btn btn-sm btn-primary">Uncompleted</button>
