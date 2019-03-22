@@ -1,7 +1,7 @@
 from flask_login import login_user, login_required, current_user, logout_user
 
-from alayatodo import app, login_manager
-from alayatodo.forms import LoginForm
+from alayatodo import app, login_manager, db
+from alayatodo.forms import LoginForm, TodoForm
 from alayatodo.models.user_model import User
 from alayatodo.models.todo_model import Todo
 from flask import (
@@ -22,8 +22,8 @@ def home():
 
 @app.route('/login', methods=['GET'])
 def login():
-    form = LoginForm()
-    return render_template('login.html', form=form)
+    login_form = LoginForm()
+    return render_template('login.html', form=login_form)
 
 
 @app.route('/login', methods=['POST'])
@@ -47,8 +47,7 @@ def logout():
 @app.route('/todo/<id>', methods=['GET'])
 @login_required
 def todo(id):
-    cur = g.db.execute("SELECT * FROM todos WHERE id ='%s'" % id)
-    todo = cur.fetchone()
+    todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
     return render_template('todo.html', todo=todo)
 
 
@@ -56,31 +55,32 @@ def todo(id):
 @app.route('/todo/', methods=['GET'])
 @login_required
 def todos():
-    cur = g.db.execute("SELECT * FROM todos")
-    todos = cur.fetchall()
-    return render_template('todos.html', todos=todos)
+    todos = Todo.query.filter_by(user_id=current_user.id)
+    todo_form = TodoForm()
+    return render_template('todos.html', todos=todos, form=todo_form)
 
 
 @app.route('/todo', methods=['POST'])
 @app.route('/todo/', methods=['POST'])
 @login_required
 def todos_POST():
-    if not session.get('logged_in'):
-        return redirect('/login')
-    g.db.execute(
-        "INSERT INTO todos (user_id, description) VALUES ('%s', '%s')"
-        % (session['user']['id'], request.form.get('description', ''))
-    )
-    g.db.commit()
+    form = TodoForm()
+    if form.validate_on_submit():
+        todo = Todo(description=form.description.data, user_id=current_user.id)
+        db.session.add(todo)
+        db.session.commit()
+
     return redirect('/todo')
 
 
 @app.route('/todo/<id>', methods=['POST'])
+@login_required
 def todo_delete(id):
-    if not session.get('logged_in'):
-        return redirect('/login')
-    g.db.execute("DELETE FROM todos WHERE id ='%s'" % id)
-    g.db.commit()
+    todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
+    if todo is None:
+        return redirect('/todo')
+    db.session.delete(todo)
+    db.session.commit()
     return redirect('/todo')
 
 
