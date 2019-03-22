@@ -84,7 +84,7 @@ def todo_delete(id):
     return redirect('/todo')
 
 
-@app.route('/todo/<id>/<status>', methods=['POST'])
+@app.route('/todo/<status>/<id>/', methods=['POST'])
 @login_required
 def todo_completed(id, status):
     todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
