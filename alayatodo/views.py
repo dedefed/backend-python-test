@@ -69,6 +69,7 @@ def todos_POST():
         todo = Todo(description=form.description.data, user_id=current_user.id)
         db.session.add(todo)
         db.session.commit()
+        flash("Todo Created")
 
     return redirect('/todo')
 
@@ -81,6 +82,7 @@ def todo_delete(id):
         return redirect('/todo')
     db.session.delete(todo)
     db.session.commit()
+    flash("Todo removed")
     return redirect('/todo')
 
 
