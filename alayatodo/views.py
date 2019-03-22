@@ -94,8 +94,10 @@ def todo_completed(id, status):
         return redirect('/todo')
     if status == 'done':
         todo.is_completed = True
+        flash("Todo completed")
     elif status == 'undone':
         todo.is_completed = False
+        flash("Todo not completed")
     else:
         return redirect('/todo')
 
