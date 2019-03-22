@@ -84,6 +84,23 @@ def todo_delete(id):
     return redirect('/todo')
 
 
+@app.route('/todo/<id>/<status>', methods=['POST'])
+@login_required
+def todo_completed(id, status):
+    todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
+    if todo is None:
+        return redirect('/todo')
+    if status == 'done':
+        todo.is_completed = True
+    elif status == 'undone':
+        todo.is_completed = False
+    else:
+        return redirect('/todo')
+
+    db.session.commit()
+    return redirect('/todo')
+
+
 @login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect('/login')

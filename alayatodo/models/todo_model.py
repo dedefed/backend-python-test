@@ -9,6 +9,7 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     description = db.Column(db.String(255), nullable=False)
+    is_completed = db.Column(db.BOOLEAN(), default=False)
 
     def __init__(self, description, user_id):
         self.description = description
