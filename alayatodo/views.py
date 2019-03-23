@@ -58,14 +58,15 @@ def todo_to_json(id):
     return jsonify(todo.to_dict())
 
 
-@app.route('/todo', methods=['GET'])
-@app.route('/todo/', methods=['GET'])
+@app.route('/todos', methods=['GET'])
+@app.route('/todos/', methods=['GET'])
+@app.route('/todos/<page>', methods=['GET'])
 @login_required
 def todos(page=1):
-    todos = Todo.query.filter_by(user_id=current_user.id).paginate(page=page, per_page=4)
-    print(todos.items.has_prev)
+    todos = Todo.query.filter_by(user_id=current_user.id).paginate(page=int(page), per_page=4, error_out=False)
     todo_form = TodoForm()
-    return render_template('todos.html', todos=todos.items, form=todo_form)
+    print(todos.prev_num)
+    return render_template('todos.html', todos=todos, form=todo_form)
 
 
 @app.route('/todo', methods=['POST'])
@@ -79,7 +80,7 @@ def todos_POST():
         db.session.commit()
         flash("Todo Created")
 
-    return redirect('/todo')
+    return redirect('/todos')
 
 
 @app.route('/todo/<id>', methods=['POST'])
@@ -87,11 +88,11 @@ def todos_POST():
 def todo_delete(id):
     todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
     if todo is None:
-        return redirect('/todo')
+        return redirect('/todos')
     db.session.delete(todo)
     db.session.commit()
     flash("Todo removed")
-    return redirect('/todo')
+    return redirect('/todos')
 
 
 @app.route('/todo/<status>/<id>/', methods=['POST'])
@@ -107,10 +108,10 @@ def todo_completed(id, status):
         todo.is_completed = False
         flash("Todo not completed")
     else:
-        return redirect('/todo')
+        return redirect('/todos')
 
     db.session.commit()
-    return redirect('/todo')
+    return redirect('/todos')
 
 
 @login_manager.unauthorized_handler

@@ -5,7 +5,7 @@
     <h1>Todo List:</h1>
     <table class="table table-striped">
         <th>#</th><th>User</th><th>Description</th><th>Completed</th><th>Action</th>
-        {% for todo in todos %}
+        {% for todo in todos.items %}
             <tr>
                 <td>{{ todo.id }}</td>
                 <td>{{ todo.user_id }}</td>
@@ -46,7 +46,9 @@
         </tr>
     </table>
 </div>
-    {% if todos.has_prev %}<a href="{{ url_for('todos', page=todos.prev_num) }}">Previous</a>{% endif %} |
-    {% if todos.has_next %}<a href="{{ url_for('todos', page=todos.next_num) }}">Next</a>{% endif %}
+    <div class="col-md-4 col-md-offset-4">
+        {% if todos.has_prev %}<a href="{{ url_for('todos', page=todos.prev_num) }}">Previous</a>{% else %} Previous{% endif %} |
+        {% if todos.has_next %}<a href="{{ url_for('todos', page=todos.next_num) }}">Next</a>{% else %} Next{% endif %}
+    </div>
 
 {% endblock %}
