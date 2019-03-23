@@ -89,7 +89,7 @@ More documentation on Github:
 * https://help.github.com/articles/using-pull-requests/
 
 
-### Run test
+### Instruction to run the test
 
 Make sure to use python 3 since python2 will stop to be support in 2020
 
