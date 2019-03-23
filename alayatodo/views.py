@@ -61,10 +61,11 @@ def todo_to_json(id):
 @app.route('/todo', methods=['GET'])
 @app.route('/todo/', methods=['GET'])
 @login_required
-def todos():
-    todos = Todo.query.filter_by(user_id=current_user.id)
+def todos(page=1):
+    todos = Todo.query.filter_by(user_id=current_user.id).paginate(page=page, per_page=4)
+    print(todos.items.has_prev)
     todo_form = TodoForm()
-    return render_template('todos.html', todos=todos, form=todo_form)
+    return render_template('todos.html', todos=todos.items, form=todo_form)
 
 
 @app.route('/todo', methods=['POST'])

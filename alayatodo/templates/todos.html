@@ -46,4 +46,7 @@
         </tr>
     </table>
 </div>
+    {% if todos.has_prev %}<a href="{{ url_for('todos', page=todos.prev_num) }}">Previous</a>{% endif %} |
+    {% if todos.has_next %}<a href="{{ url_for('todos', page=todos.next_num) }}">Next</a>{% endif %}
+
 {% endblock %}
