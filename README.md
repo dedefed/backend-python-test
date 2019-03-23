@@ -95,9 +95,9 @@ Make sure to use python 3 since python2 will stop to be support in 2020
 
 ```sh
 virtualenv -p python3 .
-bin/pip install -r requirements.txt
-bin/python main.py initdb
+pip install -r requirements.txt
+python3 main.py initdb
 export FLASK_APP=alayatodo/__init__.py
 flask db upgrade
-bin/python main.py
+python3 main.py
 ```

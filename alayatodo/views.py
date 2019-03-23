@@ -10,7 +10,7 @@ from flask import (
     render_template,
     request,
     session,
-    flash, jsonify)
+    flash, jsonify, url_for)
 
 
 @app.route('/')
@@ -31,17 +31,17 @@ def login_POST():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user.check_password(form.password.data) and user is not None:
+        if user is not None and user.check_password(form.password.data):
             login_user(user)
-            return redirect('/todo')
+            return redirect(url_for('todos'))
         else:
-            return redirect('/login')
+            return redirect(url_for('login'))
 
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect('/')
+    return redirect(url_for('home'))
 
 
 @app.route('/todo/<id>', methods=['GET'])
@@ -65,7 +65,6 @@ def todo_to_json(id):
 def todos(page=1):
     todos = Todo.query.filter_by(user_id=current_user.id).paginate(page=int(page), per_page=4, error_out=False)
     todo_form = TodoForm()
-    print(todos.prev_num)
     return render_template('todos.html', todos=todos, form=todo_form)
 
 
@@ -80,7 +79,7 @@ def todos_POST():
         db.session.commit()
         flash("Todo Created")
 
-    return redirect('/todos')
+    return redirect(url_for('todos'))
 
 
 @app.route('/todo/<id>', methods=['POST'])
@@ -88,11 +87,11 @@ def todos_POST():
 def todo_delete(id):
     todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
     if todo is None:
-        return redirect('/todos')
+        return redirect(url_for('todos'))
     db.session.delete(todo)
     db.session.commit()
     flash("Todo removed")
-    return redirect('/todos')
+    return redirect(url_for('todos'))
 
 
 @app.route('/todo/<status>/<id>/', methods=['POST'])
@@ -100,7 +99,7 @@ def todo_delete(id):
 def todo_completed(id, status):
     todo = Todo.query.filter_by(id=id, user_id=current_user.id).first()
     if todo is None:
-        return redirect('/todo')
+        return redirect(url_for('todos'))
     if status == 'done':
         todo.is_completed = True
         flash("Todo completed")
@@ -108,12 +107,12 @@ def todo_completed(id, status):
         todo.is_completed = False
         flash("Todo not completed")
     else:
-        return redirect('/todos')
+        return redirect(url_for('todos'))
 
     db.session.commit()
-    return redirect('/todos')
+    return redirect(url_for('todos'))
 
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
-    return redirect('/login')
+    return redirect(url_for('login'))
